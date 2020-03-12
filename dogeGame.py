@@ -25,7 +25,7 @@ def hit(player):
     e_x2, e_y2 = dog3.radius()
     e_x3, e_y3 = dog4.radius()
     p_x, p_y = player.x, player.y
-    if p_x in e_x and p_y in e_y or p_x in e_x1 and p_y in e_y1\
+    if p_x in e_x and p_y in e_y or p_x in e_x1 and p_y in e_y1 \
             or p_x in e_x2 and p_y in e_y2 or p_x in e_x3 and p_y in e_y3:
         hp_minus = True
     elif hp_minus:
@@ -69,6 +69,31 @@ def player_score():
     mytime = pygame.time.get_ticks()
     score = mytime // 1000
     draw_text(screen, str(score), 50, width - 20, 10)
+    return str(score)
+
+
+def stop_score():
+    stop_scor = "Your score: " + player_score()
+    return str(stop_scor)
+
+
+def pause():
+    """This function paused game"""
+    pauss = True
+    while pauss:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        screen.blit(BackGround.image, BackGround.rect)
+        draw_text(screen, "you loss", 80, 500, 400)
+        draw_text(screen, stop_score(), 90, 500, 700)
+        draw_text(screen, "press - ESCAPE, TO LEAVE THE GAME", 50, 500, 100)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            pauss = False
+        elif keys[pygame.K_ESCAPE]:
+            quit()
 
 
 class Player:
@@ -150,19 +175,21 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
 
-# class Music:
-#    def __init__(self, name):
-#        self.name = name
 
-#    def game_music(self):
-#        pygame.mixer.init()
-#        pygame.mixer.music.set_volume(0.5)
-#        pygame.mixer.music.load(self.name)
-#        pygame.mixer.music.play(-1)
+class Music:
+    def __init__(self, name):
+        self.name = name
+
+    def game_music(self):
+        """ This function play song"""
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.load(self.name)
+        pygame.mixer.music.play(-1)
 
 
 BackGround = Background('images/back.jpg', [0, 0])
-# mus = Music("background_music.mp3")
+mus = Music("gameSong.mp3")
 cat = Player('cat', 'images/cat.png', 300, 300)
 dog = Enemy('garry', 'images/dog1.png', 0, 1000)
 dog2 = Enemy('walter', 'images/dog2.png', 900, 900)
@@ -173,10 +200,9 @@ dog4 = Enemy('ros', 'images/dog4.png', random.randrange(width - 50),
 health1 = Player('health1', 'images/health1.png', 15, 15)
 health4 = Player('+HealthPoint', 'images/health1.png',
                  random.randrange(width - 100), random.randrange(height - 100))
-
+mus.game_music()
 while 1:
     player_score()
-    #    mus.game_music()
     cat.place()
     dog.en_place()
     dog2.en_place()
@@ -192,7 +218,7 @@ while 1:
     hit(cat)
     take_health_point(cat, health4)
     if cat.hp == 0:
-        quit()
+        pause()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
